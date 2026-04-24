@@ -14,12 +14,8 @@
     const button = document.getElementById('btnEntrar');
     if (button) {
       button.addEventListener('click', (e) => {
-        button.style.transform = 'scale(0.98)';
-        setTimeout(() => {
-          button.style.transform = '';
-        }, 120);
-        alert('✨ Bem-vindo(a)! Acesso autorizado. ✨');
-        // window.location.href = "/dashboard";
+        // Abre o link em uma nova aba
+        window.open('https://github.dev/lucas2006A/Agrinho', '_blank');
       });
     }
   </script>
