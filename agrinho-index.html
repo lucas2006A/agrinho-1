@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agrinho 2026 - Agro Forte, Futuro Sustentável</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2d5016;
+            --secondary: #7cb342;
+            --accent: #9ccc65;
+            --dark: #1a1a1a;
+            --light: #f5f5f5;
+            --border: #e0e0e0;
+            --text: #333;
+            --text-light: #666;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        .logo-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .logo-text p {
+            font-size: 0.8rem;
+            color: var(--secondary);
+            margin: 0;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            transition: width 0.3s;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-tools {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-tools:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 80, 22, 0.3);
+        }
+
+        .agrinho-badge {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(124, 179, 66, 0.05) 100%);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            min-height: 600px;
+        }
+
+        .hero-content {
+            animation: fadeInLeft 0.8s ease;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            color: var(--primary);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(124, 179, 66, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(124, 179, 66, 0.4);
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 400px;
+            animation: fadeInRight 0.8s ease;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-card .icon {
+            font-size: 2.5rem;
+        }
+
+        .floating-card p {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .card-1 {
+            top: 0;
+            left: 0;
+            animation-delay: 0s;
+        }
+
+        .card-2 {
+            top: 50%;
+            right: 0;
+            animation-delay: 1s;
+        }
+
+        .card-3 {
+            bottom: 0;
+            left: 30%;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 3rem 2rem;
+            background: var(--primary);
+            color: white;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Sobre Section */
+        .sobre {
+            padding: 4rem 2rem;
+        }
+
+        .sobre h2,
+        .praticas h2,
+        .impacto h2,
+        .contato h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .sobre-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .sobre-card {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .sobre-card:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 10px 30px rgba(124, 179, 66, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .sobre-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .sobre-card p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Práticas Section */
+        .praticas {
+            padding: 4rem 2rem;
+            background: var(--light);
+        }
+
+        .praticas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .pratica-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .pratica-card:hover {
+            box-shadow: 0 15px 40px rgba(124, 179, 66, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-header .icon {
+            font-size: 2rem;
+        }
+
+        .card-header h3 {
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .card-description {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        .card-details {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .card-details.hidden {
+            display: none;
+        }
+
+        /* Impacto Section */
+        .impacto {
+            padding: 4rem 2rem;
+        }
+
+        .impacto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .impacto-item {
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.05) 0%, rgba(124, 179, 66, 0.05) 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .impacto-item:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.1) 0%, rgba(124, 179, 66, 0.1) 100%);
+        }
+
+        .impacto-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .impacto-item h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .impacto-item p {
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Contato Section */
+        .contato {
+            padding: 4rem 2rem;
+            background: var(--light);
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(124, 179, 66, 0.1);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-agrinho {
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        /* Chatbot */
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(124, 179, 66, 0.3);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(124, 179, 66, 0.4);
+        }
+
+        .chatbot {
+            position: fixed;
+            bottom: 80px;
+            right: 2rem;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chatbot.hidden {
+            display: none;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h3 {
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .chatbot-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .message p {
+            background: var(--light);
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin: 0;
+            max-width: 80%;
+        }
+
+        .message.bot p {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .message.user p {
+            background: var(--accent);
+            color: white;
+            margin-left: auto;
+        }
+
+        .chatbot-input {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.6rem 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .chatbot-input button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chatbot-input button:hover {
+            background: var(--primary);
+        }
+
+        /* Tools Page */
+        .tools-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            z-index: 2000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .tools-page.hidden {
+            display: none;
+        }
+
+        .tools-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-btn,
+        .ai-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover,
+        .ai-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .tools-header h1 {
+            flex: 1;
+            text-align: center;
+            margin: 0;
+        }
+
+        .tools-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .tool-section {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .tool-section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .map-container {
+            height: 400px;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border: 2px solid var(--border);
+        }
+
+        .map-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--secondary);
+            padding: 0.6rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .area-result,
+        .calc-result {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .calc-input {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .calc-input label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .calc-input input {
+            padding: 0.8rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.hidden {
+            display: none;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-content h2 {
+            color: var(--primary);
+            padding: 2rem 2rem 1rem;
+            margin: 0;
+        }
+
+        .gemini-chat {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .gemini-input {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .gemini-input input {
+            flex: 1;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 0.6rem 1rem;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .gemini-input button {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .nav {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+                order: 3;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                margin-top: 150px;
+                padding: 2rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-visual {
+                height: 250px;
+            }
+
+            .tools-container {
+                grid-template-columns: 1fr;
+            }
+
+            .chatbot {
+                width: calc(100% - 2rem);
+                right: 1rem;
+            }
+
+            .chatbot-toggle {
+                bottom: 1rem;
+                right: 1rem;
+            }
+
+            .tools-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .tools-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .sobre h2,
+            .praticas h2,
+            .impacto h2,
+            .contato h2 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Moderno -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div class="logo-text">
+                    <h1>Agrinho</h1>
+                    <p>2026</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#sobre" class="nav-link">Sobre</a>
+                <a href="#praticas" class="nav-link">Práticas</a>
+                <a href="#impacto" class="nav-link">Impacto</a>
+                <a href="#contato" class="nav-link">Contato</a>
+            </nav>
+            <div class="header-actions">
+                <button class="btn-tools" onclick="goToTools()">Ferramentas</button>
+                <span class="agrinho-badge">agrinho</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Agro forte, futuro sustentável: equilíbrio entre produção e meio ambiente</h1>
+            <p class="hero-subtitle">Transformando a agricultura através da inovação e sustentabilidade</p>
+            <button class="btn-primary" onclick="scrollTo('praticas')">Explorar Agora</button>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <span class="icon">🌱</span>
+                <p>Sustentabilidade</p>
+            </div>
+            <div class="floating-card card-2">
+                <span class="icon">📊</span>
+                <p>Produtividade</p>
+            </div>
+            <div class="floating-card card-3">
+                <span class="icon">🌍</span>
+                <p>Meio Ambiente</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stat-item">
+            <h3 class="stat-number" data-target="2500">0</h3>
+            <p>Propriedades Sustentáveis</p>
+        </div>
+        <div class="stat-item">
+            <h3 class="stat-number" data-target="85">0</h3>
+            <p>% Redução de Emissões</p>
+        </div>
+        <div class="stat-item">
+            <h3 class="stat-number" data-target="150">0</h3>
+            <p>Mil Hectares Protegidos</p>
+        </div>
+        <div class="stat-item">
+            <h3 class="stat-number" data-target="45">0</h3>
+            <p>Espécies Preservadas</p>
+        </div>
+    </section>
+
+    <!-- Sobre Section -->
+    <section id="sobre" class="sobre">
+        <div class="container">
+            <h2>Sobre Agronegócio Sustentável</h2>
+            <div class="sobre-grid">
+                <div class="sobre-card">
+                    <div class="card-icon">🌾</div>
+                    <h3>Produção Responsável</h3>
+                    <p>Utilizando técnicas modernas que respeitam o meio ambiente e garantem produtividade máxima.</p>
+                </div>
+                <div class="sobre-card">
+                    <div class="card-icon">💧</div>
+                    <h3>Gestão de Água</h3>
+                    <p>Sistemas inteligentes de irrigação que economizam água e preservam recursos hídricos.</p>
+                </div>
+                <div class="sobre-card">
+                    <div class="card-icon">🌳</div>
+                    <h3>Conservação Florestal</h3>
+                    <p>Mantendo a biodiversidade através de práticas que integram floresta e agricultura.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Práticas Section -->
+    <section id="praticas" class="praticas">
+        <div class="container">
+            <h2>Práticas Sustentáveis</h2>
+            <div class="praticas-grid">
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">🌱</span>
+                        <h3>Rotação de Culturas</h3>
+                    </div>
+                    <p class="card-description">Alternância de cultivos para melhorar a fertilidade do solo.</p>
+                    <div class="card-details hidden">
+                        <p>A rotação de culturas é uma técnica ancestral que melhora a qualidade do solo, reduz pragas naturalmente e aumenta a produtividade a longo prazo.</p>
+                    </div>
+                </div>
+
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">💧</span>
+                        <h3>Irrigação Inteligente</h3>
+                    </div>
+                    <p class="card-description">Sistemas automatizados que economizam água.</p>
+                    <div class="card-details hidden">
+                        <p>Sensores de umidade do solo controlam a irrigação, economizando até 40% de água enquanto mantém a produtividade.</p>
+                    </div>
+                </div>
+
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">🐝</span>
+                        <h3>Biodiversidade</h3>
+                    </div>
+                    <p class="card-description">Preservação de espécies polinizadoras e benéficas.</p>
+                    <div class="card-details hidden">
+                        <p>Criar habitats para abelhas, borboletas e outros polinizadores aumenta a produção e mantém o ecossistema equilibrado.</p>
+                    </div>
+                </div>
+
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">♻️</span>
+                        <h3>Compostagem</h3>
+                    </div>
+                    <p class="card-description">Transformação de resíduos em nutrientes.</p>
+                    <div class="card-details hidden">
+                        <p>Compostagem reduz resíduos, melhora a fertilidade do solo e reduz a necessidade de fertilizantes químicos.</p>
+                    </div>
+                </div>
+
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">☀️</span>
+                        <h3>Energia Renovável</h3>
+                    </div>
+                    <p class="card-description">Painéis solares e energia eólica nas propriedades.</p>
+                    <div class="card-details hidden">
+                        <p>Energia renovável reduz custos operacionais e emissões de carbono, tornando a propriedade mais sustentável.</p>
+                    </div>
+                </div>
+
+                <div class="pratica-card" onclick="toggleCard(this)">
+                    <div class="card-header">
+                        <span class="icon">🔬</span>
+                        <h3>Tecnologia Agrícola</h3>
+                    </div>
+                    <p class="card-description">Uso de IA e drones para monitoramento.</p>
+                    <div class="card-details hidden">
+                        <p>Drones e inteligência artificial monitoram plantações, detectam pragas e otimizam recursos em tempo real.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Impacto Section -->
+    <section id="impacto" class="impacto">
+        <div class="container">
+            <h2>Impacto Ambiental</h2>
+            <div class="impacto-grid">
+                <div class="impacto-item">
+                    <div class="impacto-icon">🌍</div>
+                    <h3>Redução de Carbono</h3>
+                    <p>Práticas sustentáveis reduzem emissões de CO₂ em até 60%</p>
+                </div>
+                <div class="impacto-item">
+                    <div class="impacto-icon">💧</div>
+                    <h3>Conservação de Água</h3>
+                    <p>Economia de 40% no consumo de água através de irrigação inteligente</p>
+                </div>
+                <div class="impacto-item">
+                    <div class="impacto-icon">🌳</div>
+                    <h3>Proteção Florestal</h3>
+                    <p>Preservação de 150 mil hectares de floresta nativa</p>
+                </div>
+                <div class="impacto-item">
+                    <div class="impacto-icon">🦋</div>
+                    <h3>Biodiversidade</h3>
+                    <p>Aumento de 45 espécies de animais em propriedades sustentáveis</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato Section -->
+    <section id="contato" class="contato">
+        <div class="container">
+            <h2>Entre em Contato</h2>
+            <form class="contact-form" onsubmit="handleSubmit(event)">
+                <input type="text" placeholder="Seu Nome" required>
+                <input type="email" placeholder="Seu Email" required>
+                <textarea placeholder="Sua Mensagem" rows="5" required></textarea>
+                <button type="submit" class="btn-primary">Enviar Mensagem</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Agrinho - Agro Forte, Futuro Sustentável</p>
+            <p class="footer-agrinho">agrinho</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot IA -->
+    <div class="chatbot" id="chatbot">
+        <div class="chatbot-header">
+            <h3>Assistente IA</h3>
+            <button class="close-btn" onclick="toggleChatbot()">−</button>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="message bot">
+                <p>Olá! 👋 Como posso ajudá-lo com agronegócio sustentável?</p>
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="chatInput" placeholder="Digite sua pergunta..." onkeypress="handleChatKey(event)">
+            <button onclick="sendMessage()">→</button>
+        </div>
+    </div>
+
+    <!-- Botão Flutuante do Chatbot -->
+    <button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">💬</button>
+
+    <!-- Página de Ferramentas (Oculta) -->
+    <div id="toolsPage" class="tools-page hidden">
+        <div class="tools-header">
+            <button class="back-btn" onclick="goBack()">← Voltar</button>
+            <h1>Ferramentas Agrinho</h1>
+            <button class="ai-btn" onclick="openGemini()">🤖 Gemini AI</button>
+        </div>
+
+        <div class="tools-container">
+            <!-- Mapa -->
+            <div class="tool-section">
+                <h2>Mapa de Terrenos</h2>
+                <div id="map" class="map-container"></div>
+                <div class="map-controls">
+                    <button onclick="startDrawing()" class="btn-secondary">Desenhar Terreno</button>
+                    <button onclick="clearMap()" class="btn-secondary">Limpar</button>
+                    <div id="areaResult" class="area-result"></div>
+                </div>
+            </div>
+
+            <!-- Calculadora -->
+            <div class="tool-section">
+                <h2>Calculadora de Terrenos</h2>
+                <div class="calculator">
+                    <div class="calc-input">
+                        <label>Comprimento (m)</label>
+                        <input type="number" id="length" placeholder="0" min="0">
+                    </div>
+                    <div class="calc-input">
+                        <label>Largura (m)</label>
+                        <input type="number" id="width" placeholder="0" min="0">
+                    </div>
+                    <button onclick="calculateArea()" class="btn-primary">Calcular</button>
+                    <div id="calcResult" class="calc-result"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Gemini -->
+        <div id="geminiModal" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close" onclick="closeGemini()">✕</button>
+                <h2>Gemini AI - Assistente Agrinho</h2>
+                <div class="gemini-chat" id="geminiChat">
+                    <div class="message bot">
+                        <p>Olá! Sou o Gemini AI especializado em agronegócio sustentável. Como posso ajudá-lo?</p>
+                    </div>
+                </div>
+                <div class="gemini-input">
+                    <input type="text" id="geminiInput" placeholder="Faça uma pergunta..." onkeypress="handleGeminiKey(event)">
+                    <button onclick="sendGeminiMessage()">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===========================
+        // NAVEGAÇÃO E SCROLL
+        // ===========================
+
+        function scrollTo(sectionId) {
+            const section = document.querySelector(`#${sectionId}`);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Atualizar link ativo no menu
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ===========================
+        // CONTADOR ANIMADO
+        // ===========================
+
+        function animateCounter() {
+            const counters = document.querySelectorAll('.stat-number');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                let current = 0;
+                const increment = target / 50;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        setTimeout(updateCounter, 30);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                updateCounter();
+            });
+        }
+
+        // Iniciar contador quando a seção ficar visível
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.target.classList.contains('stats')) {
+                    animateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const statsSection = document.querySelector('.stats');
+            if (statsSection) {
+                observer.observe(statsSection);
+            }
+        });
+
+        // ===========================
+        // CARDS INTERATIVOS
+        // ===========================
+
+        function toggleCard(card) {
+            const details = card.querySelector('.card-details');
+            if (details) {
+                details.classList.toggle('hidden');
+            }
+        }
+
+        // ===========================
+        // FORMULÁRIO DE CONTATO
+        // ===========================
+
+        function handleSubmit(event) {
+            event.preventDefault();
+            alert('Obrigado! Sua mensagem foi enviada com sucesso.');
+            event.target.reset();
+        }
+
+        // ===========================
+        // CHATBOT IA
+        // ===========================
+
+        const chatbotToggle = document.getElementById('chatbotToggle');
+        const chatbot = document.getElementById('chatbot');
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatSendBtn = document.querySelector('.chatbot-input button');
+
+        function toggleChatbot() {
+            chatbot.classList.toggle('hidden');
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            // Adicionar mensagem do usuário
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<p>${message}</p>`;
+            chatMessages.appendChild(userMsg);
+            
+            chatInput.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Simular resposta do bot
+            setTimeout(() => {
+                const response = generateBotResponse(message);
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.innerHTML = `<p>${response}</p>`;
+                chatMessages.appendChild(botMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+
+        function generateBotResponse(message) {
+            const msg = message.toLowerCase();
+            
+            const responses = {
+                'sustentável': 'A agricultura sustentável busca equilibrar produção com preservação ambiental. Quer saber mais sobre práticas específicas?',
+                'água': 'A irrigação inteligente pode economizar até 40% de água! Temos tecnologia de sensores que otimizam o uso.',
+                'solo': 'A rotação de culturas melhora significativamente a fertilidade do solo e reduz pragas naturalmente.',
+                'biodiversidade': 'Preservar polinizadores como abelhas e borboletas é essencial para a produtividade agrícola.',
+                'carbono': 'Práticas sustentáveis podem reduzir emissões de CO₂ em até 60% comparado à agricultura convencional.',
+                'energia': 'Painéis solares e energia eólica são excelentes opções para propriedades agrícolas sustentáveis.',
+                'tecnologia': 'Drones e IA monitoram plantações, detectam pragas e otimizam recursos em tempo real.',
+                'compostagem': 'A compostagem transforma resíduos em nutrientes, reduzindo a necessidade de fertilizantes químicos.',
+            };
+            
+            for (const [keyword, response] of Object.entries(responses)) {
+                if (msg.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            return 'Ótima pergunta! Estou aqui para ajudar com tópicos sobre agronegócio sustentável. Tente perguntar sobre água, solo, biodiversidade ou energia.';
+        }
+
+        function handleChatKey(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // ===========================
+        // PÁGINA DE FERRAMENTAS
+        // ===========================
+
+        let map;
+        let drawingMode = false;
+        let coordinates = [];
+        let polygon;
+
+        function goToTools() {
+            document.getElementById('toolsPage').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(initMap, 100);
+        }
+
+        function goBack() {
+            document.getElementById('toolsPage').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function initMap() {
+            if (map) return;
+            
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer || mapContainer.offsetParent === null) return;
+            
+            map = L.map('map').setView([-15.7975, -47.8919], 4);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            mapContainer.addEventListener('click', handleMapClick);
+        }
+
+        function handleMapClick(e) {
+            if (!drawingMode) return;
+            
+            const rect = map.getContainer().getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const point = map.containerPointToLatLng([x, y]);
+            
+            coordinates.push([point.lat, point.lng]);
+            
+            // Adicionar marcador
+            L.circleMarker([point.lat, point.lng], {
+                radius: 5,
+                fillColor: '#7cb342',
+                color: '#2d5016',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            
+            // Desenhar polígono
+            if (coordinates.length > 1) {
+                if (polygon) map.removeLayer(polygon);
+                polygon = L.polygon(coordinates, {
+                    color: '#7cb342',
+                    weight: 2,
+                    opacity: 0.7,
+                    fillOpacity: 0.3
+                }).addTo(map);
+            }
+        }
+
+        function startDrawing() {
+            drawingMode = !drawingMode;
+            const btn = event.target;
+            if (drawingMode) {
+                btn.textContent = 'Parar Desenho';
+                btn.style.background = '#d32f2f';
+                coordinates = [];
+                if (polygon) map.removeLayer(polygon);
+                map.eachLayer(layer => {
+                    if (layer instanceof L.CircleMarker) map.removeLayer(layer);
+                });
+            } else {
+                btn.textContent = 'Desenhar Terreno';
+                btn.style.background = '';
+            }
+        }
+
+        function clearMap() {
+            coordinates = [];
+            drawingMode = false;
+            document.querySelector('.map-controls button').textContent = 'Desenhar Terreno';
+            document.querySelector('.map-controls button').style.background = '';
+            document.getElementById('areaResult').textContent = '';
+            
+            if (polygon) map.removeLayer(polygon);
+            map.eachLayer(layer => {
+                if (layer instanceof L.CircleMarker) map.removeLayer(layer);
+            });
+        }
+
+        function calculateAreaFromMap() {
+            if (coordinates.length < 3) {
+                alert('Desenhe pelo menos 3 pontos para calcular a área!');
+                return;
+            }
+            
+            const area = calculatePolygonArea(coordinates);
+            const hectares = (area / 10000).toFixed(2);
+            
+            document.getElementById('areaResult').innerHTML = `
+                <strong>Área do Terreno:</strong><br>
+                ${area.toFixed(2)} m²<br>
+                ${hectares} hectares
+            `;
+        }
+
+        function calculatePolygonArea(coords) {
+            let area = 0;
+            for (let i = 0; i < coords.length; i++) {
+                const j = (i + 1) % coords.length;
+                area += coords[i][1] * coords[j][0];
+                area -= coords[j][1] * coords[i][0];
+            }
+            
+            // Converter de graus para metros (aproximado)
+            area = Math.abs(area) / 2;
+            area = area * 111000 * 111000; // Conversão aproximada
+            
+            return area;
+        }
+
+        // ===========================
+        // CALCULADORA DE TERRENOS
+        // ===========================
+
+        function calculateArea() {
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            
+            if (!length || !width || length <= 0 || width <= 0) {
+                alert('Por favor, insira valores válidos!');
+                return;
+            }
+            
+            const areaM2 = length * width;
+            const hectares = (areaM2 / 10000).toFixed(2);
+            
+            document.getElementById('calcResult').innerHTML = `
+                <strong>Resultado:</strong><br>
+                ${areaM2.toFixed(2)} m²<br>
+                ${hectares} hectares
+            `;
+        }
+
+        // ===========================
+        // GEMINI AI MODAL
+        // ===========================
+
+        const geminiModal = document.getElementById('geminiModal');
+        const geminiInput = document.getElementById('geminiInput');
+        const geminiChat = document.getElementById('geminiChat');
+
+        function openGemini() {
+            geminiModal.classList.remove('hidden');
+        }
+
+        function closeGemini() {
+            geminiModal.classList.add('hidden');
+        }
+
+        function sendGeminiMessage() {
+            const message = geminiInput.value.trim();
+            if (!message) return;
+            
+            // Adicionar mensagem do usuário
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.innerHTML = `<p>${message}</p>`;
+            geminiChat.appendChild(userMsg);
+            
+            geminiInput.value = '';
+            geminiChat.scrollTop = geminiChat.scrollHeight;
+            
+            // Simular resposta do Gemini
+            setTimeout(() => {
+                const response = generateGeminiResponse(message);
+                const botMsg = document.createElement('div');
+                botMsg.className = 'message bot';
+                botMsg.innerHTML = `<p>${response}</p>`;
+                geminiChat.appendChild(botMsg);
+                geminiChat.scrollTop = geminiChat.scrollHeight;
+            }, 800);
+        }
+
+        function generateGeminiResponse(message) {
+            const msg = message.toLowerCase();
+            
+            const responses = {
+                'medição': 'Para medir um terreno, você pode usar o mapa interativo clicando em pontos ou inserir as dimensões na calculadora manual. Qual método prefere?',
+                'hectare': '1 hectare = 10.000 m². Use nossa calculadora para converter rapidamente entre metros quadrados e hectares.',
+                'terreno': 'Você pode desenhar seu terreno no mapa ou calcular manualmente. Qual é o tamanho aproximado?',
+                'sustentável': 'Agricultura sustentável equilibra produção com preservação ambiental. Quer dicas de práticas sustentáveis?',
+                'plantio': 'Recomendamos rotação de culturas, irrigação inteligente e preservação de biodiversidade.',
+                'produção': 'Com práticas sustentáveis, você mantém a produtividade e reduz impactos ambientais.',
+            };
+            
+            for (const [keyword, response] of Object.entries(responses)) {
+                if (msg.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            return 'Sou o Gemini AI especializado em agronegócio sustentável. Posso ajudar com medições de terrenos, cálculos de área ou dicas de sustentabilidade. O que você gostaria de saber?';
+        }
+
+        function handleGeminiKey(event) {
+            if (event.key === 'Enter') {
+                sendGeminiMessage();
+            }
+        }
+
+        // Fechar modal ao clicar fora
+        geminiModal.addEventListener('click', (e) => {
+            if (e.target === geminiModal) {
+                closeGemini();
+            }
+        });
+
+        // Inicializar
+        console.log('Agrinho 2026 - Site Moderno Carregado!');
+        console.log('agrinho');
+    </script>
+</body>
+</html>
