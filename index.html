@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Entrar | Interface Elegante</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <div class="glow"></div>
+  <button class="btn-entrar" id="btnEntrar">Entrar</button>
+
+  <script>
+    const button = document.getElementById('btnEntrar');
+    if (button) {
+      button.addEventListener('click', (e) => {
+        button.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+          button.style.transform = '';
+        }, 120);
+        alert('✨ Bem-vindo(a)! Acesso autorizado. ✨');
+        // window.location.href = "/dashboard";
+      });
+    }
+  </script>
+</body>
+</html>
