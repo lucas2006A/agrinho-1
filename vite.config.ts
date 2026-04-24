@@ -1,4 +1,4 @@
-import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
+iimport { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
@@ -8,89 +8,202 @@ import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
-// Writes browser logs directly to files, trimmed when exceeding size limit
+// Coleta logs do navegador e os escreve em arquivos, com limite de tamanho
 // =============================================================================
 
 const PROJECT_ROOT = import.meta.dirname;
 const LOG_DIR = path.join(PROJECT_ROOT, ".manus-logs");
-const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB per log file
-const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // Trim to 60% to avoid constant re-trimming
+const MAX_LOG_SIZE_BYTES = 1 * 1024 * 1024; // 1MB por arquivo
+const TRIM_TARGET_BYTES = Math.floor(MAX_LOG_SIZE_BYTES * 0.6); // 60% após trim
 
 type LogSource = "browserConsole" | "networkRequests" | "sessionReplay";
 
-function ensureLogDir() {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR, { recursive: true });
+// Garante que o diretório de logs existe
+async function ensureLogDir() {
+  try {
+    await fs.promises.mkdir(LOG_DIR, { recursive: true });
+  } catch {
+    // ignora erros de criação
   }
 }
 
-function trimLogFile(logPath: string, maxSize: number) {
+// Corta o arquivo mantendo apenas as linhas mais recentes
+async function trimLogFile(logPath: string, maxSize: number) {
   try {
-    if (!fs.existsSync(logPath) || fs.statSync(logPath).size <= maxSize) {
-      return;
-    }
+    const stats = await fs.promises.stat(logPath).catch(() => null);
+    if (!stats || stats.size <= maxSize) return;
 
-    const lines = fs.readFileSync(logPath, "utf-8").split("\n");
+    const content = await fs.promises.readFile(logPath, "utf-8");
+    const lines = content.split("\n");
     const keptLines: string[] = [];
     let keptBytes = 0;
 
-    // Keep newest lines (from end) that fit within 60% of maxSize
-    const targetSize = TRIM_TARGET_BYTES;
+    // Mantém as linhas mais recentes até atingir o tamanho alvo
     for (let i = lines.length - 1; i >= 0; i--) {
       const lineBytes = Buffer.byteLength(`${lines[i]}\n`, "utf-8");
-      if (keptBytes + lineBytes > targetSize) break;
+      if (keptBytes + lineBytes > TRIM_TARGET_BYTES) break;
       keptLines.unshift(lines[i]);
       keptBytes += lineBytes;
     }
 
-    fs.writeFileSync(logPath, keptLines.join("\n"), "utf-8");
+    await fs.promises.writeFile(logPath, keptLines.join("\n"), "utf-8");
   } catch {
-    /* ignore trim errors */
+    // ignora erros de trim
   }
 }
 
-function writeToLogFile(source: LogSource, entries: unknown[]) {
+// Escreve entradas no arquivo de log correspondente
+async function writeToLogFile(source: LogSource, entries: unknown[]) {
   if (entries.length === 0) return;
 
-  ensureLogDir();
+  await ensureLogDir();
   const logPath = path.join(LOG_DIR, `${source}.log`);
 
-  // Format entries with timestamps
   const lines = entries.map((entry) => {
     const ts = new Date().toISOString();
     return `[${ts}] ${JSON.stringify(entry)}`;
   });
 
-  // Append to log file
-  fs.appendFileSync(logPath, `${lines.join("\n")}\n`, "utf-8");
-
-  // Trim if exceeds max size
-  trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
+  await fs.promises.appendFile(logPath, `${lines.join("\n")}\n`, "utf-8");
+  await trimLogFile(logPath, MAX_LOG_SIZE_BYTES);
 }
 
+// Código cliente que será injetado na página (coleta logs e envia via POST)
+const CLIENT_SCRIPT = `
+(function() {
+  if (window.__MANUS_DEBUG_COLLECTOR__) return;
+  window.__MANUS_DEBUG_COLLECTOR__ = true;
+
+  const ENDPOINT = '/__manus__/logs';
+  const FLUSH_INTERVAL = 2000;
+  let queue = { consoleLogs: [], networkRequests: [], sessionEvents: [] };
+  let timer = null;
+
+  function flush() {
+    if (timer) clearTimeout(timer);
+    timer = null;
+    const payload = {};
+    let hasData = false;
+    for (const key in queue) {
+      if (queue[key].length) {
+        payload[key] = queue[key];
+        queue[key] = [];
+        hasData = true;
+      }
+    }
+    if (!hasData) return;
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true
+    }).catch(() => {});
+  }
+
+  function scheduleFlush() {
+    if (timer) return;
+    timer = setTimeout(flush, FLUSH_INTERVAL);
+  }
+
+  // Captura console
+  const originalConsole = { ...console };
+  ['log', 'info', 'warn', 'error', 'debug'].forEach(level => {
+    console[level] = function(...args) {
+      originalConsole[level].apply(console, args);
+      try {
+        queue.consoleLogs.push({ level, args: args.map(a => {
+          try { return JSON.stringify(a); } catch { return String(a); }
+        }) });
+        scheduleFlush();
+      } catch (e) {}
+    };
+  });
+
+  // Captura erros não tratados
+  window.addEventListener('error', (event) => {
+    queue.consoleLogs.push({ level: 'error', args: [event.message, event.filename, event.lineno, event.colno] });
+    scheduleFlush();
+  });
+  window.addEventListener('unhandledrejection', (event) => {
+    queue.consoleLogs.push({ level: 'unhandledrejection', args: [String(event.reason)] });
+    scheduleFlush();
+  });
+
+  // Captura requisições fetch
+  const originalFetch = window.fetch;
+  window.fetch = function(...args) {
+    const startTime = Date.now();
+    return originalFetch.apply(this, args).then(response => {
+      const duration = Date.now() - startTime;
+      queue.networkRequests.push({ url: args[0], method: args[1]?.method || 'GET', status: response.status, duration });
+      scheduleFlush();
+      return response;
+    }).catch(error => {
+      queue.networkRequests.push({ url: args[0], method: args[1]?.method || 'GET', error: error.message });
+      scheduleFlush();
+      throw error;
+    });
+  };
+
+  // Captura XMLHttpRequest
+  const XHR = XMLHttpRequest.prototype;
+  const originalOpen = XHR.open;
+  const originalSend = XHR.send;
+  XHR.open = function(method, url) {
+    this._manusUrl = url;
+    this._manusMethod = method;
+    return originalOpen.apply(this, arguments);
+  };
+  XHR.send = function() {
+    const startTime = Date.now();
+    this.addEventListener('loadend', () => {
+      const duration = Date.now() - startTime;
+      queue.networkRequests.push({ url: this._manusUrl, method: this._manusMethod, status: this.status, duration });
+      scheduleFlush();
+    });
+    this.addEventListener('error', () => {
+      queue.networkRequests.push({ url: this._manusUrl, method: this._manusMethod, error: 'XHR failed' });
+      scheduleFlush();
+    });
+    return originalSend.apply(this, arguments);
+  };
+
+  // Replay de eventos de usuário (básico)
+  function captureEvent(type, target) {
+    queue.sessionEvents.push({ type, target: target?.tagName || 'unknown', time: Date.now() });
+    scheduleFlush();
+  }
+  document.addEventListener('click', (e) => captureEvent('click', e.target), true);
+  document.addEventListener('input', (e) => captureEvent('input', e.target), true);
+  document.addEventListener('keydown', (e) => captureEvent('keydown', e.target), true);
+
+  // flush final antes de sair da página
+  window.addEventListener('beforeunload', () => flush());
+})();
+`;
+
 /**
- * Vite plugin to collect browser debug logs
- * - POST /__manus__/logs: Browser sends logs, written directly to files
- * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
- * - Auto-trimmed when exceeding 1MB (keeps newest entries)
+ * Plugin Vite para coletar logs de debug do navegador.
+ * - Injeta script cliente em desenvolvimento.
+ * - Endpoint POST /__manus__/logs recebe os logs e escreve em arquivos.
+ * - Arquivos: .manus-logs/browserConsole.log, networkRequests.log, sessionReplay.log
+ * - Cada arquivo é limitado a 1MB (mantém as entradas mais recentes).
  */
 function vitePluginManusDebugCollector(): Plugin {
+  const isDev = process.env.NODE_ENV !== "production";
+
   return {
     name: "manus-debug-collector",
+    apply: "serve", // só roda em modo de desenvolvimento
 
     transformIndexHtml(html) {
-      if (process.env.NODE_ENV === "production") {
-        return html;
-      }
+      if (!isDev) return html;
       return {
         html,
         tags: [
           {
             tag: "script",
-            attrs: {
-              src: "/__manus__/debug-collector.js",
-              defer: true,
-            },
+            children: CLIENT_SCRIPT, // injeta o código diretamente, sem requisição extra
             injectTo: "head",
           },
         ],
@@ -98,59 +211,52 @@ function vitePluginManusDebugCollector(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      // POST /__manus__/logs: Browser sends logs (written directly to files)
-      server.middlewares.use("/__manus__/logs", (req, res, next) => {
+      if (!isDev) return;
+
+      // Middleware para receber logs via POST
+      server.middlewares.use("/__manus__/logs", async (req, res, next) => {
         if (req.method !== "POST") {
           return next();
         }
 
-        const handlePayload = (payload: any) => {
-          // Write logs directly to files
-          if (payload.consoleLogs?.length > 0) {
-            writeToLogFile("browserConsole", payload.consoleLogs);
+        let body = "";
+        try {
+          for await (const chunk of req) {
+            body += chunk;
           }
-          if (payload.networkRequests?.length > 0) {
-            writeToLogFile("networkRequests", payload.networkRequests);
+          const payload = JSON.parse(body);
+
+          // Processa cada tipo de log de forma assíncrona, sem bloquear
+          const promises = [];
+          if (payload.consoleLogs?.length) {
+            promises.push(writeToLogFile("browserConsole", payload.consoleLogs));
           }
-          if (payload.sessionEvents?.length > 0) {
-            writeToLogFile("sessionReplay", payload.sessionEvents);
+          if (payload.networkRequests?.length) {
+            promises.push(writeToLogFile("networkRequests", payload.networkRequests));
           }
+          if (payload.sessionEvents?.length) {
+            promises.push(writeToLogFile("sessionReplay", payload.sessionEvents));
+          }
+          await Promise.all(promises);
 
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ success: true }));
-        };
-
-        const reqBody = (req as { body?: unknown }).body;
-        if (reqBody && typeof reqBody === "object") {
-          try {
-            handlePayload(reqBody);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
-          return;
+        } catch (e) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ success: false, error: String(e) }));
         }
-
-        let body = "";
-        req.on("data", (chunk) => {
-          body += chunk.toString();
-        });
-
-        req.on("end", () => {
-          try {
-            const payload = JSON.parse(body);
-            handlePayload(payload);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
-        });
       });
     },
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+const plugins = [
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
+  vitePluginManusRuntime(),
+  vitePluginManusDebugCollector(),
+];
 
 export default defineConfig({
   plugins,
