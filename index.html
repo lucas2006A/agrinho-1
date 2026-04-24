@@ -3,15 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Entrar | Agrinho</title>
+  <title>Concurso Agrinho 2026</title>
   <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
   <div class="glow"></div>
-  <button class="btn-entrar" id="btnEntrar">Entrar</button>
+  <div class="container">
+    <h1 class="titulo">
+      <span class="emoji">🌱</span> Concurso Agrinho 2026
+    </h1>
+    <p class="slogan">Agro forte, futuro sustentável</p>
+    <p class="subtitulo">Equilíbrio entre produção e meio ambiente</p>
+    <p class="descricao">
+      Transformando a agricultura através da inovação e sustentabilidade
+    </p>
+    <button class="btn-explorar" id="btnExplorar">Explorar Ferramentas</button>
+  </div>
 
   <script>
-    const button = document.getElementById('btnEntrar');
+    const button = document.getElementById('btnExplorar');
     if (button) {
       button.addEventListener('click', () => {
         window.open('https://agrinho-ten-vert.vercel.app/#ferramentas', '_blank');

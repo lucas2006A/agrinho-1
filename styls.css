@@ -1,4 +1,3 @@
-/* Reset e Configurações Globais */
 * {
   margin: 0;
   padding: 0;
@@ -10,31 +9,31 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, sans-serif;
   
-  /* Fundo Gradiente Animado */
-  background: linear-gradient(125deg, #0f2027, #203a43, #2c5364);
+  /* Fundo gradiente animado em tons verdes */
+  background: linear-gradient(125deg, #0a2b1f, #1a4d2a, #2c7a3e);
   background-size: 200% 200%;
   animation: moveGradient 12s ease infinite;
   position: relative;
   overflow: hidden;
+  padding: 1.5rem;
 }
 
-/* Animação do Gradiente */
 @keyframes moveGradient {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
 
-/* Partículas Flutuantes */
+/* Partículas flutuantes */
 body::before,
 body::after {
   content: '';
   position: absolute;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(255,255,245,0.08) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(255,255,235,0.1) 0%, rgba(255,255,255,0) 70%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -51,7 +50,7 @@ body::after {
   right: -80px;
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(200,220,255,0.1) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle, rgba(200,240,180,0.12) 0%, rgba(255,255,255,0) 70%);
   animation: floatCircle 22s infinite alternate-reverse;
 }
 
@@ -60,56 +59,12 @@ body::after {
   100% { transform: translate(40px, 30px) scale(1.2); opacity: 0.7; }
 }
 
-/* Botão "Entrar" - Estilo Principal */
-.btn-entrar {
-  position: relative;
-  z-index: 20;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 60px;
-  padding: 1.1rem 2.8rem;
-  font-size: 1.7rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: white;
-  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 255, 255, 0.1) inset;
-  font-family: inherit;
-  outline: none;
-}
-
-/* Efeito Hover */
-.btn-entrar:hover {
-  background: rgba(255, 255, 255, 0.35);
-  backdrop-filter: blur(14px);
-  transform: scale(1.05);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.2) inset;
-  letter-spacing: 2.5px;
-}
-
-/* Efeito de Clique (Active) */
-.btn-entrar:active {
-  transform: scale(0.97);
-  transition: 0.05s;
-}
-
-/* Foco para Acessibilidade */
-.btn-entrar:focus-visible {
-  outline: 3px solid #ffdd99;
-  outline-offset: 5px;
-}
-
-/* Brilho Central Decorativo */
+/* Brilho central animado */
 .glow {
   position: absolute;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(120, 180, 255, 0.2), transparent 70%);
+  background: radial-gradient(circle, rgba(160, 230, 120, 0.2), transparent 70%);
   border-radius: 50%;
   top: 50%;
   left: 50%;
@@ -125,10 +80,126 @@ body::after {
   100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
 }
 
-/* Responsividade para Telas Menores */
-@media (max-width: 550px) {
-  .btn-entrar {
-    padding: 0.8rem 2rem;
-    font-size: 1.3rem;
+/* Container do conteúdo (centralizado) */
+.container {
+  position: relative;
+  z-index: 20;
+  max-width: 800px;
+  text-align: center;
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 48px;
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Títulos e textos */
+.titulo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: white;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
+}
+
+.emoji {
+  font-size: 2.5rem;
+  display: inline-block;
+  margin-right: 0.3rem;
+}
+
+.slogan {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #f9f3c1;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.subtitulo {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #e0f0e0;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.descricao {
+  font-size: 1.2rem;
+  color: #f0f7e6;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Botão "Explorar Ferramentas" */
+.btn-explorar {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 60px;
+  padding: 1rem 2.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  font-family: inherit;
+  outline: none;
+  width: auto;
+  display: inline-block;
+}
+
+.btn-explorar:hover {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(14px);
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+}
+
+.btn-explorar:active {
+  transform: scale(0.97);
+  transition: 0.05s;
+}
+
+.btn-explorar:focus-visible {
+  outline: 3px solid #ffdd99;
+  outline-offset: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 680px) {
+  .container {
+    padding: 1.8rem 1.2rem;
+  }
+  .titulo {
+    font-size: 1.8rem;
+  }
+  .emoji {
+    font-size: 1.8rem;
+  }
+  .slogan {
+    font-size: 1.4rem;
+  }
+  .subtitulo {
+    font-size: 1rem;
+  }
+  .descricao {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .btn-explorar {
+    padding: 0.8rem 1.8rem;
+    font-size: 1.2rem;
   }
 }
